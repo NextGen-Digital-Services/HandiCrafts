@@ -37,7 +37,7 @@ export function ProductForm() {
 
   useEffect(() => {
     if (isEditing) {
-      const existing = products.find((p) => p.id === id)
+      const existing = (products || []).find((p) => p.id === id)
       if (existing) {
         setFormData({
           title: existing.title || '',
@@ -60,7 +60,7 @@ export function ProductForm() {
     let computedSlug = slugify(formData.title) || 'product'
     let suffix = 1
     let uniqueSlug = computedSlug
-    while (products.some((p) => p.slug === uniqueSlug && p.id !== id)) {
+    while ((products || []).some((p) => p.slug === uniqueSlug && p.id !== id)) {
       suffix++
       uniqueSlug = `${computedSlug}-${suffix}`
     }
@@ -87,19 +87,19 @@ export function ProductForm() {
     }
 
     if (isEditing) {
-      setProducts(products.map((p) => (p.id === id ? productPayload : p)))
+      setProducts((products || []).map((p) => (p.id === id ? productPayload : p)))
     } else {
-      setProducts([productPayload, ...products])
+      setProducts([productPayload, ...(products || [])])
     }
 
     navigate('/admin/products')
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-ivory)' }}>
+    <div className="admin-layout">
       <AdminSidebar />
 
-      <main style={{ flex: 1, padding: '2.5rem' }}>
+      <main className="admin-main">
         <Link 
           to="/admin/products" 
           style={{ 
@@ -109,20 +109,20 @@ export function ProductForm() {
             color: 'var(--color-brass)', 
             fontSize: '0.85rem', 
             fontWeight: '600', 
-            marginBottom: '1.5rem' 
+            marginBottom: '1.25rem' 
           }}
         >
           <ArrowLeft size={16} /> Back to Products
         </Link>
 
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', color: 'var(--color-bordeaux-deep)', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', color: 'var(--color-bordeaux-deep)', marginBottom: '0.5rem' }}>
           {isEditing ? `Edit Product: ${formData.title}` : 'Add New Kashmiri Masterpiece'}
         </h1>
-        <p style={{ color: 'rgba(58, 42, 34, 0.7)', fontSize: '0.9rem', marginBottom: '2.5rem' }}>
+        <p style={{ color: 'rgba(58, 42, 34, 0.7)', fontSize: '0.9rem', marginBottom: '2rem' }}>
           Enter product specification and cross-link it to a master artisan profile.
         </p>
 
-        <form onSubmit={handleSubmit} style={{ backgroundColor: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-brass-light)', boxShadow: 'var(--shadow-card)', maxWidth: '800px' }}>
+        <form onSubmit={handleSubmit} style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-brass-light)', boxShadow: 'var(--shadow-card)', maxWidth: '800px', width: '100%' }}>
           <div className="form-group">
             <label className="form-label">Product Title *</label>
             <input
@@ -135,7 +135,7 @@ export function ProductForm() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="form-grid-2">
             <div className="form-group">
               <label className="form-label">Category *</label>
               <select
@@ -170,7 +170,7 @@ export function ProductForm() {
               className="form-select"
             >
               <option value="">-- No Linked Artisan --</option>
-              {artisans.map((a) => (
+              {(artisans || []).map((a) => (
                 <option key={a.id} value={a.id}>{a.name} ({a.craftTechnique})</option>
               ))}
             </select>

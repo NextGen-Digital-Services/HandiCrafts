@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Search, Filter } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { ProductCard } from './ProductCard'
 
 export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
@@ -16,7 +16,7 @@ export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
     { label: 'Namda & Crewel', id: 'Namda & Crewel' }
   ]
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = (products || []).filter((product) => {
     const matchesCategory = 
       activeCategory === 'all' || 
       product.category.toLowerCase() === activeCategory.toLowerCase() ||
@@ -38,17 +38,25 @@ export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
   return (
     <div>
       {/* Search & Category Filter Toolbar */}
-      <div style={{ marginBottom: '3rem' }}>
+      <div style={{ marginBottom: '2.5rem' }}>
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          gap: '1.5rem', 
+          gap: '1.25rem', 
           flexWrap: 'wrap',
-          marginBottom: '1.8rem'
+          marginBottom: '1.5rem'
         }}>
-          {/* Category Tabs */}
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          {/* Category Tabs (Horizontally scrollable on mobile) */}
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
+            overflowX: 'auto',
+            paddingBottom: '0.5rem',
+            width: '100%',
+            maxWidth: '100%',
+            WebkitOverflowScrolling: 'touch'
+          }}>
             {categories.map((cat) => {
               const isActive = activeCategory.toLowerCase() === cat.id.toLowerCase()
               return (
@@ -56,10 +64,12 @@ export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
-                    padding: '0.55rem 1.1rem',
-                    fontSize: '0.85rem',
+                    padding: '0.5rem 1rem',
+                    fontSize: '0.8rem',
                     fontWeight: '500',
                     borderRadius: '50px',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
                     transition: 'all 0.2s ease',
                     backgroundColor: isActive ? 'var(--color-bordeaux)' : '#FFFFFF',
                     color: isActive ? 'var(--color-ivory)' : 'var(--color-walnut)',
@@ -74,7 +84,7 @@ export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
           </div>
 
           {/* Search Box */}
-          <div style={{ position: 'relative', width: '280px' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
             <input
               type="text"
               placeholder="Search by craft or title..."
@@ -92,11 +102,11 @@ export function ProductGrid({ products, artisans, initialCategory = 'all' }) {
       {filteredProducts.length > 0 ? (
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
-          gap: '2rem' 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', 
+          gap: '1.5rem' 
         }}>
           {filteredProducts.map((product) => {
-            const artisan = artisans.find((a) => a.id === product.linkedArtisanId)
+            const artisan = (artisans || []).find((a) => a.id === product.linkedArtisanId)
             return (
               <ProductCard 
                 key={product.id} 

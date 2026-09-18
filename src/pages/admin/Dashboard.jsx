@@ -1,23 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Users, ShoppingBag, QrCode, PlusCircle, ExternalLink, Trash2, Edit } from 'lucide-react'
+import { Users, ShoppingBag, QrCode, PlusCircle, ExternalLink, Edit } from 'lucide-react'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { AdminSidebar } from '../../components/admin/AdminSidebar'
-import { Button } from '../../components/ui/Button'
-import { formatINR } from '../../utils/slugify'
 
 export function Dashboard() {
   const [artisans] = useLocalStorage('artisans', [])
   const [products] = useLocalStorage('products', [])
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-ivory)' }}>
+    <div className="admin-layout">
       <AdminSidebar />
 
-      <main style={{ flex: 1, padding: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+      <main className="admin-main">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '2rem' }}>
           <div>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', color: 'var(--color-bordeaux-deep)' }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', color: 'var(--color-bordeaux-deep)' }}>
               Atelier Overview & QR Hub
             </h1>
             <p style={{ color: 'rgba(58, 42, 34, 0.7)', fontSize: '0.9rem' }}>
@@ -25,11 +23,11 @@ export function Dashboard() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link to="/admin/artisans/new" className="btn btn-brass">
+          <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', width: '100%', maxWidth: 'max-content' }}>
+            <Link to="/admin/artisans/new" className="btn btn-brass" style={{ flex: '1 1 auto' }}>
               <PlusCircle size={16} /> Add Artisan (Gen QR)
             </Link>
-            <Link to="/admin/products/new" className="btn btn-primary">
+            <Link to="/admin/products/new" className="btn btn-primary" style={{ flex: '1 1 auto' }}>
               <PlusCircle size={16} /> Add Product
             </Link>
           </div>
@@ -39,24 +37,24 @@ export function Dashboard() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
+          gap: '1.25rem',
+          marginBottom: '2.5rem'
         }}>
           <div style={{
             backgroundColor: '#FFFFFF',
             borderRadius: 'var(--radius-md)',
-            padding: '1.8rem',
+            padding: '1.5rem',
             border: '1px solid var(--color-brass-light)',
             boxShadow: 'var(--shadow-soft)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Total Artisans</span>
-              <Users size={22} color="var(--color-bordeaux)" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Total Artisans</span>
+              <Users size={20} color="var(--color-bordeaux)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.4rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
-              {artisans.length}
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
+              {(artisans || []).length}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.4rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.2rem' }}>
               Each with live story QR page
             </div>
           </div>
@@ -64,18 +62,18 @@ export function Dashboard() {
           <div style={{
             backgroundColor: '#FFFFFF',
             borderRadius: 'var(--radius-md)',
-            padding: '1.8rem',
+            padding: '1.5rem',
             border: '1px solid var(--color-brass-light)',
             boxShadow: 'var(--shadow-soft)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Catalogue Products</span>
-              <ShoppingBag size={22} color="var(--color-bordeaux)" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Catalogue Products</span>
+              <ShoppingBag size={20} color="var(--color-bordeaux)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.4rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
-              {products.length}
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
+              {(products || []).length}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.4rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.2rem' }}>
               Cross-linked to artisan profiles
             </div>
           </div>
@@ -83,18 +81,18 @@ export function Dashboard() {
           <div style={{
             backgroundColor: '#FFFFFF',
             borderRadius: 'var(--radius-md)',
-            padding: '1.8rem',
+            padding: '1.5rem',
             border: '1px solid var(--color-brass-light)',
             boxShadow: 'var(--shadow-soft)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Active Hang-Tag QRs</span>
-              <QrCode size={22} color="var(--color-brass)" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-brass)', letterSpacing: '0.1em' }}>Active Hang-Tag QRs</span>
+              <QrCode size={20} color="var(--color-brass)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.4rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
-              {artisans.length}
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', fontWeight: '600', color: 'var(--color-bordeaux-deep)' }}>
+              {(artisans || []).length}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.4rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'rgba(58, 42, 34, 0.6)', marginTop: '0.2rem' }}>
               Ready for high-res PNG download
             </div>
           </div>
@@ -104,20 +102,20 @@ export function Dashboard() {
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: 'var(--radius-md)',
-          padding: '2rem',
+          padding: '1.5rem',
           border: '1px solid var(--color-brass-light)',
-          marginBottom: '3rem',
+          marginBottom: '2rem',
           boxShadow: 'var(--shadow-soft)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.3rem', color: 'var(--color-bordeaux-deep)' }}>Registered Master Artisans</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--color-bordeaux-deep)' }}>Registered Master Artisans</h3>
             <Link to="/admin/artisans" style={{ fontSize: '0.85rem', color: 'var(--color-bordeaux)', fontWeight: '600' }}>
               View All Artisans →
             </Link>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+          <div className="table-responsive">
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem', minWidth: '600px' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--color-ivory-deep)', color: 'var(--color-brass)' }}>
                   <th style={{ padding: '0.8rem' }}>Artisan</th>
@@ -128,7 +126,7 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {artisans.slice(0, 5).map((artisan) => (
+                {(artisans || []).slice(0, 5).map((artisan) => (
                   <tr key={artisan.id} style={{ borderBottom: '1px solid var(--color-ivory-deep)' }}>
                     <td style={{ padding: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                       <img

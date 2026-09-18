@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Sparkles, ShieldCheck, Clock, MapPin, QrCode, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Sparkles, QrCode, CheckCircle } from 'lucide-react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { formatINR } from '../utils/slugify'
 import { Badge } from '../components/ui/Badge'
@@ -11,8 +11,8 @@ export function ProductDetail() {
   const [products] = useLocalStorage('products', [])
   const [artisans] = useLocalStorage('artisans', [])
 
-  const product = products.find((p) => p.slug === slug)
-  const artisan = product ? artisans.find((a) => a.id === product.linkedArtisanId) : null
+  const product = (products || []).find((p) => p.slug === slug)
+  const artisan = product ? (artisans || []).find((a) => a.id === product.linkedArtisanId) : null
 
   const [activeImage, setActiveImage] = useState(() => {
     return product ? product.image : ''
@@ -57,13 +57,13 @@ export function ProductDetail() {
             fontWeight: '600',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
-            marginBottom: '2rem'
+            marginBottom: '1.5rem'
           }}
         >
           <ArrowLeft size={16} /> Back to Collections
         </Link>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
           {/* Gallery Column */}
           <div>
             <div style={{
@@ -77,22 +77,23 @@ export function ProductDetail() {
               <img
                 src={activeImage || product.image}
                 alt={product.title}
-                style={{ width: '100%', height: '520px', objectFit: 'cover' }}
+                style={{ width: '100%', height: 'clamp(300px, 45vh, 520px)', objectFit: 'cover' }}
               />
             </div>
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.8rem' }}>
+              <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImage(img)}
                     style={{
-                      width: '80px',
-                      height: '80px',
+                      width: '70px',
+                      height: '70px',
                       borderRadius: 'var(--radius-sm)',
                       overflow: 'hidden',
+                      flexShrink: 0,
                       border: `2px solid ${activeImage === img ? 'var(--color-bordeaux)' : 'transparent'}`,
                       opacity: activeImage === img ? 1 : 0.7,
                       cursor: 'pointer'
@@ -111,27 +112,27 @@ export function ProductDetail() {
               <Badge variant="brass">{product.category}</Badge>
             </div>
 
-            <h1 style={{ fontSize: '2.4rem', color: 'var(--color-bordeaux-deep)', marginBottom: '0.8rem', lineHeight: '1.2' }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', color: 'var(--color-bordeaux-deep)', marginBottom: '0.8rem', lineHeight: '1.2' }}>
               {product.title}
             </h1>
 
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: 'var(--color-bordeaux)', fontWeight: '600', marginBottom: '1.5rem' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', color: 'var(--color-bordeaux)', fontWeight: '600', marginBottom: '1.25rem' }}>
               {formatINR(product.price)}
             </div>
 
-            <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: 'var(--color-walnut)', marginBottom: '2rem' }}>
+            <p style={{ fontSize: '1rem', lineHeight: '1.7', color: 'var(--color-walnut)', marginBottom: '1.5rem' }}>
               {product.description}
             </p>
 
             {/* Specifications */}
             {product.details && product.details.length > 0 && (
-              <div style={{ backgroundColor: 'var(--color-ivory-deep)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '2rem', borderLeft: '3px solid var(--color-brass)' }}>
-                <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-brass)', marginBottom: '0.8rem' }}>
+              <div style={{ backgroundColor: 'var(--color-ivory-deep)', padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', borderLeft: '3px solid var(--color-brass)' }}>
+                <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-brass)', marginBottom: '0.6rem' }}>
                   Atelier Specifications
                 </h4>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   {product.details.map((detail, idx) => (
-                    <li key={idx} style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <li key={idx} style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ color: 'var(--color-brass)' }}>•</span>
                       <span>{detail}</span>
                     </li>
@@ -142,13 +143,13 @@ export function ProductDetail() {
 
             {/* Care Instructions */}
             {product.careInstructions && (
-              <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'rgba(58, 42, 34, 0.8)' }}>
+              <div style={{ marginBottom: '1.5rem', fontSize: '0.85rem', color: 'rgba(58, 42, 34, 0.8)' }}>
                 <strong>Care & Storage:</strong> {product.careInstructions}
               </div>
             )}
 
             {/* Actions */}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem' }}>
               <Button 
                 variant="primary" 
                 size="lg"
@@ -172,28 +173,28 @@ export function ProductDetail() {
               <div style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: 'var(--radius-md)',
-                padding: '1.8rem',
+                padding: '1.5rem',
                 border: '2px solid var(--color-brass)',
                 boxShadow: 'var(--shadow-card)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-brass)', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-brass)', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.8rem' }}>
                   <QrCode size={16} />
                   <span>Physical Hang-Tag QR Artisan</span>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <img
                     src={artisan.portraitImage}
                     alt={artisan.name}
-                    style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-brass)' }}
+                    style={{ width: '70px', height: '70px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-brass)', flexShrink: 0 }}
                   />
                   <div>
-                    <h4 style={{ fontSize: '1.2rem', color: 'var(--color-bordeaux-deep)' }}>{artisan.name}</h4>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--color-brass)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0.2rem 0' }}>
+                    <h4 style={{ fontSize: '1.1rem', color: 'var(--color-bordeaux-deep)' }}>{artisan.name}</h4>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--color-brass)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0.2rem 0' }}>
                       {artisan.craftTechnique}
                     </div>
-                    <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: 'rgba(58, 42, 34, 0.8)', marginBottom: '0.8rem' }}>
-                      "{artisan.quote.substring(0, 75)}..."
+                    <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: 'rgba(58, 42, 34, 0.8)', marginBottom: '0.6rem' }}>
+                      "{artisan.quote.substring(0, 65)}..."
                     </p>
                     <Link to={`/our-story/${artisan.slug}`} className="btn btn-sm btn-brass">
                       <span>View Artist Story & Hang-Tag QR →</span>

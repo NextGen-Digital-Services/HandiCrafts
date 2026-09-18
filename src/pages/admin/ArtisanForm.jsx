@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Save, Sparkles, QrCode, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { slugify } from '../../utils/slugify'
 import { AdminSidebar } from '../../components/admin/AdminSidebar'
@@ -35,7 +35,7 @@ export function ArtisanForm() {
 
   useEffect(() => {
     if (isEditing) {
-      const existing = artisans.find((a) => a.id === id)
+      const existing = (artisans || []).find((a) => a.id === id)
       if (existing) {
         setFormData({
           name: existing.name || '',
@@ -86,10 +86,9 @@ export function ArtisanForm() {
     e.preventDefault()
 
     let computedSlug = slugify(formData.name) || 'artisan'
-    // Ensure slug uniqueness among other artisans
     let suffix = 1
     let uniqueSlug = computedSlug
-    while (artisans.some((a) => a.slug === uniqueSlug && a.id !== id)) {
+    while ((artisans || []).some((a) => a.slug === uniqueSlug && a.id !== id)) {
       suffix++
       uniqueSlug = `${computedSlug}-${suffix}`
     }
@@ -116,9 +115,9 @@ export function ArtisanForm() {
     }
 
     if (isEditing) {
-      setArtisans(artisans.map((a) => (a.id === id ? artisanPayload : a)))
+      setArtisans((artisans || []).map((a) => (a.id === id ? artisanPayload : a)))
     } else {
-      setArtisans([artisanPayload, ...artisans])
+      setArtisans([artisanPayload, ...(artisans || [])])
     }
 
     navigate('/admin/artisans')
@@ -127,10 +126,10 @@ export function ArtisanForm() {
   const liveSlug = slugify(formData.name) || 'artisan-name'
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-ivory)' }}>
+    <div className="admin-layout">
       <AdminSidebar />
 
-      <main style={{ flex: 1, padding: '2.5rem' }}>
+      <main className="admin-main">
         <Link 
           to="/admin/artisans" 
           style={{ 
@@ -140,22 +139,22 @@ export function ArtisanForm() {
             color: 'var(--color-brass)', 
             fontSize: '0.85rem', 
             fontWeight: '600', 
-            marginBottom: '1.5rem' 
+            marginBottom: '1.25rem' 
           }}
         >
           <ArrowLeft size={16} /> Back to Artisans
         </Link>
 
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', color: 'var(--color-bordeaux-deep)', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', color: 'var(--color-bordeaux-deep)', marginBottom: '0.5rem' }}>
           {isEditing ? `Edit Artisan: ${formData.name}` : 'Add Master Artisan Profile'}
         </h1>
-        <p style={{ color: 'rgba(58, 42, 34, 0.7)', fontSize: '0.9rem', marginBottom: '2.5rem' }}>
+        <p style={{ color: 'rgba(58, 42, 34, 0.7)', fontSize: '0.9rem', marginBottom: '2rem' }}>
           Fill in the story details to auto-generate the live physical hang-tag QR code.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '3.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', alignItems: 'start' }}>
           {/* Form Column */}
-          <form onSubmit={handleSubmit} style={{ backgroundColor: '#FFFFFF', padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-brass-light)', boxShadow: 'var(--shadow-card)' }}>
+          <form onSubmit={handleSubmit} style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-brass-light)', boxShadow: 'var(--shadow-card)' }}>
             <div className="form-group">
               <label className="form-label">Artisan Full Name *</label>
               <input
@@ -168,7 +167,7 @@ export function ArtisanForm() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="form-grid-2">
               <div className="form-group">
                 <label className="form-label">Craft / Technique *</label>
                 <input
@@ -177,7 +176,7 @@ export function ArtisanForm() {
                   value={formData.craftTechnique}
                   onChange={(e) => setFormData({ ...formData, craftTechnique: e.target.value })}
                   className="form-input"
-                  placeholder="e.g. Sozni Embroidery (Fine Needlework)"
+                  placeholder="e.g. Sozni Embroidery"
                 />
               </div>
 
@@ -189,12 +188,12 @@ export function ArtisanForm() {
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="form-input"
-                  placeholder="e.g. Downtown Srinagar, Old City"
+                  placeholder="e.g. Srinagar, Old City"
                 />
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="form-grid-2">
               <div className="form-group">
                 <label className="form-label">Hours Taken Per Piece *</label>
                 <input
@@ -209,14 +208,14 @@ export function ArtisanForm() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Linked Flagship Product (Optional)</label>
+                <label className="form-label">Linked Flagship Product</label>
                 <select
                   value={formData.linkedProductId}
                   onChange={(e) => setFormData({ ...formData, linkedProductId: e.target.value })}
                   className="form-select"
                 >
                   <option value="">-- Select Linked Product --</option>
-                  {products.map((p) => (
+                  {(products || []).map((p) => (
                     <option key={p.id} value={p.id}>{p.title}</option>
                   ))}
                 </select>
@@ -231,11 +230,11 @@ export function ArtisanForm() {
                 value={formData.quote}
                 onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
                 className="form-input"
-                placeholder='e.g. "With every single needle stitch, I breathe life into centuries of Kashmiri soul."'
+                placeholder='e.g. "With every needle stitch, I breathe life into Kashmiri soul."'
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="form-grid-2">
               <div className="form-group">
                 <label className="form-label">Cover Image URL *</label>
                 <input
@@ -260,9 +259,9 @@ export function ArtisanForm() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Story Narrative (Paragraphs separated by blank line) *</label>
+              <label className="form-label">Story Narrative (Blank line between paragraphs) *</label>
               <textarea
-                rows={6}
+                rows={5}
                 required
                 value={formData.storyText}
                 onChange={(e) => setFormData({ ...formData, storyText: e.target.value })}
@@ -273,22 +272,22 @@ export function ArtisanForm() {
 
             {/* Process Gallery Fields */}
             <div className="form-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Process Gallery Image URLs (Up to 6)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                <label className="form-label" style={{ marginBottom: 0 }}>Process Gallery Image URLs</label>
                 {formData.processGallery.length < 6 && (
                   <button type="button" onClick={addGalleryField} style={{ fontSize: '0.8rem', color: 'var(--color-bordeaux)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                    <Plus size={14} /> Add Image URL
+                    <Plus size={14} /> Add URL
                   </button>
                 )}
               </div>
               {formData.processGallery.map((url, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div key={idx} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.5rem' }}>
                   <input
                     type="url"
                     value={url}
                     onChange={(e) => handleGalleryChange(idx, e.target.value)}
                     className="form-input"
-                    placeholder={`Process photo URL ${idx + 1}`}
+                    placeholder={`Photo URL ${idx + 1}`}
                   />
                   <button type="button" onClick={() => removeGalleryField(idx)} style={{ color: '#E57373', padding: '0 0.5rem' }}>
                     <Trash2 size={16} />
