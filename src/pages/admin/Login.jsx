@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShieldCheck, Lock, User, AlertCircle } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
@@ -8,8 +8,14 @@ export function Login() {
   const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('kashmir123')
   const [error, setError] = useState('')
-  const { login, isLoading } = useAuth()
+  const { login, isLoading, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleLogin = async (e) => {
     // Explicitly prevent browser default submit refresh action
