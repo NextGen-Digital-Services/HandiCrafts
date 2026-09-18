@@ -4,9 +4,16 @@ import { INITIAL_PRODUCTS } from '../data/seedProducts'
 
 /**
  * Custom hook to sync state with localStorage and pre-seed initial data if empty.
+ * Includes window/SSR safety checks to prevent crashes in constrained environments.
  */
 export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      if (key === 'artisans') return INITIAL_ARTISANS
+      if (key === 'products') return INITIAL_PRODUCTS
+      return initialValue
+    }
+
     try {
       const stored = localStorage.getItem(key)
       if (stored) {
@@ -15,23 +22,38 @@ export function useLocalStorage(key, initialValue) {
       
       // Pre-seed default data if key doesn't exist yet
       if (key === 'artisans') {
-        localStorage.setItem('artisans', JSON.stringify(INITIAL_ARTISANS))
+        try {
+          localStorage.setItem('artisans', JSON.stringify(INITIAL_ARTISANS))
+        } catch (e) {
+          console.warn('Unable to write initial artisans to localStorage:', e)
+        }
         return INITIAL_ARTISANS
       }
       if (key === 'products') {
-        localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS))
+        try {
+          localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS))
+        } catch (e) {
+          console.warn('Unable to write initial products to localStorage:', e)
+        }
         return INITIAL_PRODUCTS
       }
       
-      localStorage.setItem(key, JSON.stringify(initialValue))
+      try {
+        localStorage.setItem(key, JSON.stringify(initialValue))
+      } catch (e) {
+        console.warn(`Unable to write key "${key}" to localStorage:`, e)
+      }
       return initialValue
     } catch (e) {
       console.error(`Error reading localStorage key "${key}":`, e)
+      if (key === 'artisans') return INITIAL_ARTISANS
+      if (key === 'products') return INITIAL_PRODUCTS
       return initialValue
     }
   })
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.localStorage) return
     try {
       localStorage.setItem(key, JSON.stringify(value))
     } catch (e) {
